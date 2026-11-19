@@ -7,9 +7,18 @@ PR #2 (audit-fix): root ADALAH produknya — scrapbook interaktif 5 lembar.
 Cek: root 200 + marker produk + semua tag og:/twitter: ada +
 og-image.png 200 dengan content-type image/* (bukan text/html — fallback
 Pages menipu) + 5 foto 200 + audio/lagu.mp3 200 audio/mpeg +
-/scrapbook.html 404 (entry lama sudah dihapus) + 0 frasa landing SaaS
-di root. Memakai User-Agent browser: UA default Python kena 403
+/scrapbook.html identik byte dengan root + 0 frasa landing SaaS di root.
+Memakai User-Agent browser: UA default Python kena 403
 Cloudflare (pelajaran repo #40).
+
+CATATAN FALLBACK PAGES (temuan verifikasi PR #2): proyek Pages ini
+mengembalikan HTTP 200 + isi root untuk SEMUA path yang tidak dikenal
+(`/scrapbook.html`, `/styles.css`, `/tidak-ada.html`, …) — SPA fallback
+di level proyek, bukan file. Karena itu HTTP 404 live TIDAK BISA diuji:
+yang dicek adalah `/scrapbook.html` byte-identik dengan root — kalau file
+basi masih ada di deployment, isinya pasti beda (dulu 49.592 byte,
+sekarang root 49.828 byte). Bukti file terhapus dari repo tetap dicek
+e2e di server lokal (di sana `/scrapbook.html` = 404 asli).
 """
 import sys
 import urllib.request
@@ -43,15 +52,6 @@ def fetch(url):
         return r.status, r.headers.get("Content-Type", ""), r.read()
 
 
-def fetch_status(url):
-    req = urllib.request.Request(url, headers=UA)
-    try:
-        with urllib.request.build_opener().open(req, timeout=30) as r:
-            return r.status
-    except urllib.error.HTTPError as e:
-        return e.code
-
-
 def main():
     base = sys.argv[1].rstrip("/") if len(sys.argv) > 1 else "https://vintage-memories-scrapbook.pages.dev"
     failures = []
@@ -62,6 +62,7 @@ def main():
         print(f"FAIL: root {base}/ -> HTTP {e.code}")
         return 1
     html = body.decode("utf-8", "replace")
+    root_body = body  # simpan: body tertimpa fetch-fetch berikutnya
     print(f"root: HTTP {status}, content-type {ctype}, {len(body)} byte")
     if status != 200:
         failures.append(f"root HTTP {status}")
@@ -105,17 +106,18 @@ def main():
         if path == "audio/lagu.mp3" and not ctype.startswith("audio/mpeg"):
             failures.append(f"audio/lagu.mp3 content-type bukan audio/mpeg: {ctype}")
 
-    gone = fetch_status(base + "/scrapbook.html")
-    print(f"scrapbook.html (entry lama): HTTP {gone} (harus 404)")
-    if gone != 404:
-        failures.append(f"scrapbook.html harus 404, dapat HTTP {gone}")
+    gone_status, _, gone_body = fetch(base + "/scrapbook.html")
+    print(f"scrapbook.html (entry lama): HTTP {gone_status}, {len(gone_body)} byte "
+          f"(harus identik byte dengan root — fallback Pages, lihat catatan di atas)")
+    if gone_body != root_body:
+        failures.append("scrapbook.html tidak identik dengan root — file basi masih hidup di deployment")
 
     if failures:
         print(f"verify-live: {len(failures)} kegagalan:")
         for f in failures:
             print(f"  - {f}")
         return 1
-    print("verify-live: OK (live 200, marker produk, og tags, og-image image/*, media 200, scrapbook.html 404, 0 frasa SaaS)")
+    print("verify-live: OK (live 200, marker produk, og tags, og-image image/*, media 200, scrapbook.html = fallback root, 0 frasa SaaS)")
     return 0
 
 

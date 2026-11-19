@@ -18,7 +18,7 @@ jadi **tidak ada** e2e/play-test lokal: semua tes browser hanya di CI.
 | Secret scan | gitleaks 8.28.0, riwayat penuh, config repo | Tanpa temuan |
 | E2E Playwright | `npm run e2e` (Chromium, desktop 1280×800 + Pixel 7 390×844) | Lihat bawah |
 | Smoke | job CI `smoke` | Semua file deploy ada & tidak kosong |
-| Verifikasi live | `scripts/verify-live.py <url>` | Root 200 + marker produk + 9 tag OG + og-image.png 200 `image/*` ≥10 KB + 5 foto 200 + lagu 200 `audio/mpeg` + `/scrapbook.html` 404 + 0 frasa SaaS |
+| Verifikasi live | `scripts/verify-live.py <url>` | Root 200 + marker produk + 9 tag OG + og-image.png 200 `image/*` ≥10 KB + 5 foto 200 + lagu 200 `audio/mpeg` + `/scrapbook.html` identik byte dengan root (fallback Pages — 404 live tidak bisa diuji) + 0 frasa SaaS |
 
 ## Tes E2E (`e2e/scrapbook.spec.ts`)
 

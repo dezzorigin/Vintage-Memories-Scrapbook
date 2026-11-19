@@ -55,7 +55,8 @@ PR #1 sempat membangun landing SaaS di root (navbar, hero 2 kolom, galeri
 koordinator 19 Nov 2026: root harus JADI produknya, bukan etalase tentang
 produk. Yang dipertahankan dari landing hanya tautan GitHub repo (higiene,
 di footer produk) + judul/deskripsi jujur. `scrapbook.html`, `styles.css`,
-dan `app.js` dihapus; `/scrapbook.html` kini 404.
+dan `app.js` dihapus (live Pages mengembalikan fallback root untuk
+`/scrapbook.html` — identik byte dengan root, bukan file basi).
 
 ### Non-fungsional
 
@@ -85,4 +86,5 @@ dan `app.js` dihapus; `/scrapbook.html` kini 404.
 - CI hijau penuh (static-checks, advisory-sweep, gitleaks, e2e, smoke).
 - Live di Cloudflare Pages: root 200 + marker produk + tag OG lengkap +
   og-image.png 200 `image/*` + kelima foto 200 + `audio/lagu.mp3` 200
-  `audio/mpeg` + `/scrapbook.html` 404 + 0 frasa landing SaaS di root.
+  `audio/mpeg` + `/scrapbook.html` identik byte dengan root (fallback Pages
+  — file basi tidak hidup) + 0 frasa landing SaaS di root.

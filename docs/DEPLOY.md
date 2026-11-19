@@ -31,8 +31,9 @@ python3 scripts/verify-live.py https://vintage-memories-scrapbook.pages.dev
 Cek: root 200 + marker produk ("Buka Kado Cinta", "MY SWEETHEART") +
 9 tag `og:`/`twitter:` + `og-image.png` 200 dengan `content-type: image/*`
 (bukan `text/html` — fallback Pages menipu) + `foto/foto1.jpg`–`foto5.jpg`
-200 + `audio/lagu.mp3` 200 `audio/mpeg` + `/scrapbook.html` 404
-(entry lama sudah dihapus) + 0 frasa landing SaaS di root.
+200 + `audio/lagu.mp3` 200 `audio/mpeg` + `/scrapbook.html` identik byte
+dengan root (fallback Pages — entry lama sudah dihapus, 404 aslinya dicek
+e2e) + 0 frasa landing SaaS di root.
 
 Pakai User-Agent browser (UA default Python kena 403 Cloudflare — pelajaran
 repo #40). Jangan pakai `curl -o` untuk verifikasi (menulis file 0 byte walau

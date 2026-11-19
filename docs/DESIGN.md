@@ -77,7 +77,9 @@ dengan washi tape.
    GitHub repo di footer (higiene).
 4. **Duplikat produk dihapus** — `scrapbook.html` adalah salinan produk yang
    sama dengan root baru; menyimpan dua salinan = dua sumber yang akan
-   melenceng. Dihapus; `/scrapbook.html` kini 404 (dicek e2e + verify-live).
+   melenceng. Dihapus; `/scrapbook.html` kini tidak lagi ada sebagai file —
+   live Pages mengembalikan fallback root untuk path itu (identik byte
+   dengan root, dicek verify-live; 404 aslinya dicek e2e di server lokal).
 
 ## Yang pensiun bersama landing PR #1 (riwayat, bukan kontrak)
 

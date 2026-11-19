@@ -31,8 +31,9 @@ seperti mesin ketik.
 > Sejarah: PR #1 (pola lama) sempat membangun landing SaaS di root dan
 > memindahkan produk ke `scrapbook.html`. PR #2 (audit-fix, 19 Nov 2026)
 > membongkar landing itu: root kembali jadi produknya, `scrapbook.html` /
-> `styles.css` / `app.js` dihapus. Tidak ada lagi halaman etalase — yang
-> dibuka di `/` adalah kadonya langsung.
+> `styles.css` / `app.js` dihapus (live Pages mengembalikan fallback root
+> untuk path-path itu — identik byte dengan root, bukan file basi).
+> Tidak ada lagi halaman etalase — yang dibuka di `/` adalah kadonya langsung.
 
 ## Struktur repo
 
