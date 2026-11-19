@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Arsitektur vintage-memories-scrapbook — diagram</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { font-family: "Courier Prime", ui-monospace, monospace; background: #FDFCF6; color: #1B1712; margin: 0; padding: 32px; }
+  h1 { font-family: Georgia, serif; font-size: 28px; margin: 0 0 8px; }
+  p { color: #6B645A; max-width: 72ch; line-height: 1.6; }
+  svg { width: 100%; max-width: 960px; height: auto; display: block; margin: 24px 0; background: #FFFDF8; border: 2px solid #1B1712; }
+  .box { fill: #fff; stroke: #1B1712; stroke-width: 1.5; }
+  .box-red { fill: #C1272D; }
+  .box-ink { fill: #1B1712; }
+  .box-yellow { fill: #F2A900; }
+  .lbl { font-size: 13px; fill: #1B1712; font-weight: bold; }
+  .sub { font-size: 11px; fill: #6B645A; }
+  .wht { font-size: 13px; fill: #FFF6E8; font-weight: bold; }
+  .wsub { font-size: 11px; fill: #F6D9A8; }
+  .arrow { stroke: #C1272D; stroke-width: 2; fill: none; marker-end: url(#ah); }
+  .arrow-blue { stroke: #1D4ED8; stroke-width: 2; fill: none; marker-end: url(#ahb); }
+  .note { font-size: 12px; fill: #6B645A; }
+</style>
+</head>
+<body>
+<h1>Arsitektur vintage-memories-scrapbook</h1>
+<p>Situs statis penuh, tanpa build. Dua halaman HTML saling bertaut; media
+lokal di repo (±7 MB); tidak ada dependensi produksi npm. Deploy = unggah
+direktori ke Cloudflare Pages.</p>
+
+<svg viewBox="0 0 960 600" role="img" aria-label="Diagram arsitektur: pengunjung ke Cloudflare Pages, lalu landing dan scrapbook, media foto dan lagu, serta CI">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#C1272D"></path>
+    </marker>
+    <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1D4ED8"></path>
+    </marker>
+  </defs>
+
+  <!-- Pengunjung -->
+  <rect class="box-ink" x="20" y="40" width="180" height="64" rx="2"></rect>
+  <text class="wht" x="40" y="66">pengunjung</text>
+  <text class="wsub" x="40" y="86">browser · tanpa akun</text>
+
+  <!-- Pages -->
+  <rect class="box-red" x="330" y="40" width="300" height="64" rx="2"></rect>
+  <text class="wht" x="350" y="66">Cloudflare Pages</text>
+  <text class="wsub" x="350" y="86">vintage-memories-scrapbook.pages.dev</text>
+
+  <!-- Landing -->
+  <rect class="box" x="330" y="180" width="300" height="88" rx="2"></rect>
+  <text class="lbl" x="350" y="206">index.html — landing</text>
+  <text class="sub" x="350" y="226">hero 2 kolom · galeri 5 foto</text>
+  <text class="sub" x="350" y="246">indeks fitur · cara pakai</text>
+
+  <!-- Scrapbook -->
+  <rect class="box" x="330" y="320" width="300" height="88" rx="2"></rect>
+  <text class="lbl" x="350" y="346">scrapbook.html — produk</text>
+  <text class="sub" x="350" y="366">5 lembar · mesin ketik · amplop</text>
+  <text class="sub" x="350" y="386">musik · partikel hati</text>
+
+  <!-- Media -->
+  <rect class="box-yellow" x="700" y="180" width="230" height="88" rx="2"></rect>
+  <text class="lbl" x="720" y="206">foto/ + og-image.png</text>
+  <text class="sub" x="720" y="226">5 foto album · kartu OG 1200×630</text>
+  <text class="sub" x="720" y="246">foto asli repo, bukan stok</text>
+
+  <rect class="box" x="700" y="320" width="230" height="88" rx="2"></rect>
+  <text class="lbl" x="720" y="346">audio/lagu.mp3</text>
+  <text class="sub" x="720" y="366">1 lagu latar · 6,4 MB · loop</text>
+  <text class="sub" x="720" y="386">vinyl play/pause</text>
+
+  <!-- CI -->
+  <rect class="box" x="20" y="480" width="910" height="88" rx="2"></rect>
+  <text class="lbl" x="40" y="506">CI — .github/workflows/ci.yml</text>
+  <text class="sub" x="40" y="526">static-checks (html-validate + gate P0/OG) · advisory-sweep (OSV, 0 paket produksi)</text>
+  <text class="sub" x="40" y="546">gitleaks (riwayat penuh) · Playwright e2e (desktop + Pixel 7) · smoke</text>
+
+  <!-- Panah -->
+  <path class="arrow" d="M 200 72 L 330 72"></path>
+  <path class="arrow" d="M 480 104 L 480 180"></path>
+  <path class="arrow" d="M 480 268 L 480 320"></path>
+  <path class="arrow-blue" d="M 630 224 L 700 224"></path>
+  <path class="arrow-blue" d="M 630 364 L 700 364"></path>
+  <path class="arrow" d="M 480 408 L 480 480"></path>
+  <text class="note" x="490" y="450">deploy: cf_pages.py direct upload</text>
+  <text class="note" x="490" y="150">GET /</text>
+  <text class="note" x="490" y="300">GET /scrapbook.html</text>
+</svg>
+
+<p>Alur scrapbook: start-overlay → klik "Buka Kado Cinta" (audio.play,
+unlock autoplay) → slide 1–5 via tombol Lanjut/Kembali, gerbang bunga
+mengunci navigasi ±1,85 detik → slide 4 amplop (klik → segel pecah, surat
+naik, ketik) → slide 5 tombol hati (20 partikel).</p>
+</body>
+</html>

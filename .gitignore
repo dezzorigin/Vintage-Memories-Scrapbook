@@ -1,0 +1,65 @@
+# .gitignore — vintage-memories-scrapbook
+#
+# Repo ini dulunya TANPA .gitignore (temuan analisis P1 #52). File ini
+# ditambahkan agar tidak ada satu pun berkas sensitif, cache, atau hasil
+# build yang bisa ke-commit — baik sekarang maupun oleh kontributor nanti.
+# Foto (foto/) dan lagu (audio/) SENGAJA tidak di-ignore: keduanya adalah
+# isi produk dan memang harus ikut ter-commit (keputusan koordinator).
+
+# ── Kredensial, kunci, token — JANGAN PERNAH ke-commit ────────────────────
+.env
+.env.*
+*.env
+*secret*
+*token*
+*credential*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+*.pub
+.aws/
+.ssh/
+.gnupg/
+.kube/
+*password*
+passwd
+
+# ── Histori & state shell / editor ──────────────────────────────────────────
+.histfile
+.bash_history
+.zsh_history
+*~
+*.swp
+*.swo
+.viminfo
+.idea/
+.vscode/settings.json
+
+# ── Cache & data runtime ────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+node_modules/
+.cache/
+*.log
+*.tmp
+*.bak
+*.orig
+*.rej
+
+# ── Build / artefak kerja lokal ─────────────────────────────────────────────
+dist/
+build/
+out/
+test-results/
+playwright-report/
+*.tar.gz
+*.zip
+/staging/
+.DS_Store
+Thumbs.db
