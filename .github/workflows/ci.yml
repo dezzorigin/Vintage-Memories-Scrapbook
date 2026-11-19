@@ -102,8 +102,22 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # Ulangi sampai 3x: unduh apt font di runner GitHub sering gagal
+      # sesaat ("Could not wait for server fd", 479 B/s — run 8 attempt 1,
+      # run 9 attempt 1+2, run 10 attempt 1). Bukan kegagalan tes.
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: |
+          set -e
+          for i in 1 2 3; do
+            if npx playwright install --with-deps chromium; then
+              echo "playwright browsers terpasang (percobaan $i)"
+              exit 0
+            fi
+            echo "percobaan $i gagal; ulang dalam 30 detik..."
+            sleep 30
+          done
+          echo "FAIL: playwright install gagal 3x"
+          exit 1
 
       - name: E2E produk di root (desktop + Pixel 7 + tur demo)
         run: npm run e2e
