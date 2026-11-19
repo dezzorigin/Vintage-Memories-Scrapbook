@@ -23,6 +23,8 @@ export default defineConfig({
     { name: "mobile", testIgnore: /demo\.spec\.ts/, use: { ...devices["Pixel 7"], viewport: { width: 390, height: 844 } } },
     // Tur demo README (gate merge): satu tes, video direkam. Screenshot
     // PNG-nya ditulis spek ke demo/, video webm dirakit CI jadi mp4.
-    { name: "demo", testMatch: /demo\.spec\.ts/, use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 800 }, video: "on" } },
+    // size eksplisit 1280×800: tanpa ini Playwright merekam 800×500
+    // (run 14) — video demo harus HD.
+    { name: "demo", testMatch: /demo\.spec\.ts/, use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 800 }, video: { mode: "on", size: { width: 1280, height: 800 } } } },
   ],
 });
