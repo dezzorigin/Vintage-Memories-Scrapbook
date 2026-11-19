@@ -9,7 +9,9 @@ name: CI
 #   advisory-sweep — OSV atas dependensi produksi (saat ini 0 paket npm —
 #                    situs statis; HIGH/CRITICAL = gagal).
 #   gitleaks       — secret scan riwayat penuh (fetch-depth 0) + .gitleaks.toml.
-#   playwright-e2e — produk di root di server lokal (desktop + Pixel 7).
+#   playwright-e2e — produk di root di server lokal (desktop + Pixel 7)
+#                    + tur demo README (proyek "demo", video direkam,
+#                    screenshot + mp4 diunggah sebagai artifact).
 #   smoke          — file yang di-deploy ada & tidak kosong.
 # Node 24 (html-validate 11 crash di Node 20, pola #29).
 # JANGAN `npx playwright install` di VM dev — hanya di CI.
@@ -100,11 +102,61 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # Ulangi sampai 3x: unduh apt font di runner GitHub sering gagal
+      # sesaat ("Could not wait for server fd", 479 B/s — run 8 attempt 1,
+      # run 9 attempt 1+2, run 10 attempt 1). Bukan kegagalan tes.
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: |
+          set -e
+          for i in 1 2 3; do
+            if npx playwright install --with-deps chromium; then
+              echo "playwright browsers terpasang (percobaan $i)"
+              exit 0
+            fi
+            echo "percobaan $i gagal; ulang dalam 30 detik..."
+            sleep 30
+          done
+          echo "FAIL: playwright install gagal 3x"
+          exit 1
 
-      - name: E2E produk di root (desktop + Pixel 7)
+      - name: E2E produk di root (desktop + Pixel 7 + tur demo)
         run: npm run e2e
+
+      # Tur demo README (gate merge): rakit video webm proyek "demo" jadi
+      # demo/demo.mp4 (H.264 — GitHub memotong tag <video>, README memakai
+      # thumbnail yang link ke mp4), lalu unggah demo/ sebagai artifact.
+      # ffmpeg sudah terpasang di runner ubuntu-latest.
+      - name: Rakit video demo (webm -> mp4)
+        if: always()
+        run: |
+          set -euo pipefail
+          VIDEO=$(find test-results -name 'video.webm' | head -n 1)
+          test -n "$VIDEO" || { echo "FAIL: video.webm tidak ditemukan"; find test-results -type f | head -20; exit 1; }
+          echo "video: $VIDEO ($(stat -c%s "$VIDEO") byte)"
+          # ffmpeg TIDAK terpasang di runner; ffmpeg bawaan Playwright
+          # adalah build minimal — tak kenal -movflags (run 12) maupun
+          # muxer mp4 ("Unable to choose an output format", run 13).
+          # Ambil ffmpeg statik penuh dari npm (ffmpeg-static) — registry
+          # npm sudah terbukti cepat di job ini (npm install).
+          if command -v ffmpeg >/dev/null 2>&1; then
+            FF=ffmpeg
+          else
+            npm install --no-save ffmpeg-static >/dev/null 2>&1
+            FF=$(node -e "console.log(require('ffmpeg-static'))")
+          fi
+          echo "ffmpeg: $FF"
+          "$FF" -y -loglevel error -i "$VIDEO" -c:v libx264 -pix_fmt yuv420p demo/demo.mp4
+          test -s demo/demo.mp4 || { echo "FAIL: demo.mp4 kosong"; exit 1; }
+          "$FF" -hide_banner -i demo/demo.mp4 2>&1 | head -20 || true
+          ls -la demo/
+
+      - name: Unggah demo README (screenshot + mp4)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: readme-demo
+          path: demo/
+          if-no-files-found: error
 
   # ── Smoke: file deploy ada & tidak kosong ───────────────────────────────
   smoke:
@@ -114,7 +166,7 @@ jobs:
 
       - name: File deploy ada & tidak kosong
         run: |
-          for f in index.html favicon.svg og-image.png foto/foto1.jpg foto/foto2.jpg foto/foto3.jpg foto/foto4.jpg foto/foto5.jpg audio/lagu.mp3; do
+          for f in index.html favicon.svg og-image.png foto/foto1.jpg foto/foto2.jpg foto/foto3.jpg foto/foto4.jpg foto/foto5.jpg audio/lagu.mp3 demo/demo.mp4 demo/cover.png demo/slide-1.png demo/slide-2.png demo/slide-3.png demo/slide-4-envelope.png demo/slide-5.png; do
             test -s "$f" || { echo "FAIL: $f hilang/kosong"; exit 1; }
             echo "ok: $f ($(stat -c%s "$f") byte)"
           done

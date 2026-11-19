@@ -44,6 +44,8 @@ OG_TAGS = [
     "twitter:card", "twitter:title", "twitter:description", "twitter:image",
 ]
 MEDIA = [f"foto/foto{n}.jpg" for n in range(1, 6)] + ["audio/lagu.mp3"]
+# Media README (gate merge): video demo + screenshot hero harus live juga.
+README_MEDIA = ["demo/demo.mp4", "demo/slide-1.png"]
 
 
 def fetch(url):
@@ -106,6 +108,23 @@ def main():
         if path == "audio/lagu.mp3" and not ctype.startswith("audio/mpeg"):
             failures.append(f"audio/lagu.mp3 content-type bukan audio/mpeg: {ctype}")
 
+    for path in README_MEDIA:
+        try:
+            status, ctype, body = fetch(f"{base}/{path}")
+        except urllib.error.HTTPError as e:
+            print(f"FAIL: {path} -> HTTP {e.code}")
+            failures.append(f"{path} HTTP {e.code}")
+            continue
+        print(f"{path}: HTTP {status}, content-type {ctype}, {len(body)} byte")
+        if status != 200:
+            failures.append(f"{path} HTTP {status}")
+        if path == "demo/demo.mp4" and not ctype.startswith("video/mp4"):
+            failures.append(f"demo/demo.mp4 content-type bukan video/mp4: {ctype}")
+        if path == "demo/demo.mp4" and len(body) < 100_000:
+            failures.append(f"demo/demo.mp4 terlalu kecil: {len(body)} byte (<100KB)")
+        if path == "demo/slide-1.png" and not ctype.startswith("image/"):
+            failures.append(f"demo/slide-1.png content-type bukan image/*: {ctype}")
+
     gone_status, _, gone_body = fetch(base + "/scrapbook.html")
     print(f"scrapbook.html (entry lama): HTTP {gone_status}, {len(gone_body)} byte "
           f"(harus identik byte dengan root — fallback Pages, lihat catatan di atas)")
@@ -117,7 +136,7 @@ def main():
         for f in failures:
             print(f"  - {f}")
         return 1
-    print("verify-live: OK (live 200, marker produk, og tags, og-image image/*, media 200, scrapbook.html = fallback root, 0 frasa SaaS)")
+    print("verify-live: OK (live 200, marker produk, og tags, og-image image/*, media 200, demo.mp4 video/mp4, scrapbook.html = fallback root, 0 frasa SaaS)")
     return 0
 
 

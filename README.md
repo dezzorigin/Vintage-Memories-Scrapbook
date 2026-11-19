@@ -10,6 +10,31 @@ Live: **https://vintage-memories-scrapbook.pages.dev/** · Repo:
 > mau dipakai sebagai kado sungguhan, ganti dulu dengan foto dan lagu kamu —
 > caranya ada di [Cara pakai](#cara-pakai).
 
+## Screenshot
+
+Screenshot asli dari tur Playwright (`e2e/demo.spec.ts`, direkam CI —
+bukan mockup, bukan og-image):
+
+![Cover: polaroid "Lembar Awal Kita" + ucapan "Happy Birthday, My Sweetheart", teks mengetik](demo/slide-1.png)
+
+![Amplop segel lilin dibuka, surat "Pesan Untukmu" naik lalu mengetik sendiri](demo/slide-4-envelope.png)
+
+![Penutup: polaroid "Selamanya & Seterusnya" + tombol hati, partikel hati berhamburan](demo/slide-5.png)
+
+## Video demo
+
+[![Video demo 15 detik: cover → 5 lembar + mesin ketik → amplop dibuka → tombol hati (klik untuk memutar)](demo/cover.png)](https://vintage-memories-scrapbook.pages.dev/demo/demo.mp4)
+
+> Klik gambar di atas untuk memutar video demo (MP4, 15 detik, 1280×800,
+> H.264): cover → Buka Kado Cinta → mesin ketik lembar 1 → klik vinyl →
+> lembar 2 → kartu pos lembar 3 → amplop lembar 4 dibuka + surat mengetik →
+> tombol hati lembar 5. GitHub memotong tag `<video>`, jadi video disajikan
+> sebagai thumbnail yang link ke file mp4-nya.
+>
+> Screenshot + video direkam otomatis di setiap CI dari tur yang sama
+> (`e2e/demo.spec.ts`, proyek "demo", artifact "readme-demo") — kalau produk
+> berubah, rekamannya ikut berubah. File ada di [`demo/`](demo/).
+
 ## Apa isinya
 
 Root situs (`index.html`) **adalah scrapbook-nya sendiri** — satu halaman
@@ -109,8 +134,6 @@ plus gitleaks (riwayat penuh) dan smoke check file deploy.
 
 ## Follow-up (bukan gate merge)
 
-- **Screenshot asli + video demo** — belum bisa diambil dari VM (Chrome
-  lokal tidak bisa start); diambil dari browser live saat VM pulih.
 - **Keputusan hosting media** — media ±7 MB tetap di repo untuk repo ini;
   kalau albumnya membesar, pertimbangkan pindah foto ke R2/Cloudflare Images.
 - **Layar pendek** — di viewport pendek (mis. tinggi <700px) konten lembar 2
