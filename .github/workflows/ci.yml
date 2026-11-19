@@ -133,22 +133,18 @@ jobs:
           VIDEO=$(find test-results -name 'video.webm' | head -n 1)
           test -n "$VIDEO" || { echo "FAIL: video.webm tidak ditemukan"; find test-results -type f | head -20; exit 1; }
           echo "video: $VIDEO ($(stat -c%s "$VIDEO") byte)"
-          # ffmpeg TIDAK terpasang di runner (exit 127, run 10 attempt 2) —
-          # pakai ffmpeg bawaan Playwright (diunduh bareng chromium), baru
-          # fallback apt bila tidak ada.
+          # ffmpeg TIDAK terpasang di runner; ffmpeg bawaan Playwright
+          # adalah build minimal — tak kenal -movflags (run 12) maupun
+          # muxer mp4 ("Unable to choose an output format", run 13).
+          # Ambil ffmpeg statik penuh dari npm (ffmpeg-static) — registry
+          # npm sudah terbukti cepat di job ini (npm install).
           if command -v ffmpeg >/dev/null 2>&1; then
             FF=ffmpeg
-          elif [ -x "$HOME/.cache/ms-playwright/ffmpeg-1013/ffmpeg-linux" ]; then
-            FF="$HOME/.cache/ms-playwright/ffmpeg-1013/ffmpeg-linux"
           else
-            echo "ffmpeg bawaan Playwright tidak ada — install via apt"
-            sudo apt-get install -y -qq ffmpeg
-            FF=ffmpeg
+            npm install --no-save ffmpeg-static >/dev/null 2>&1
+            FF=$(node -e "console.log(require('ffmpeg-static'))")
           fi
-          # CATATAN: ffmpeg bawaan Playwright adalah build minimal — opsi
-          # -movflags TIDAK dikenal ("Unrecognized option 'movflags'",
-          # run 12). Tanpa faststart pun mp4 tetap bisa diputar; moov atom
-          # di akhir file bukan masalah untuk unduhan progresif.
+          echo "ffmpeg: $FF"
           "$FF" -y -loglevel error -i "$VIDEO" -c:v libx264 -pix_fmt yuv420p demo/demo.mp4
           test -s demo/demo.mp4 || { echo "FAIL: demo.mp4 kosong"; exit 1; }
           "$FF" -hide_banner -i demo/demo.mp4 2>&1 | head -20 || true
