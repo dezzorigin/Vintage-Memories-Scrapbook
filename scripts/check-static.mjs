@@ -16,7 +16,7 @@
 // adalah isi asli repo sejak commit awal, BUKAN slop baru — jadi gate ini
 // TIDAK melarangnya. Yang dijaga: produk tetap utuh, tanpa sisa landing
 // SaaS, tanpa kelas Tailwind mati (temuan audit PR #2), OG lengkap.
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, statSync } from "node:fs";
 
 const html = readFileSync("index.html", "utf8");
 const failures = [];
@@ -112,6 +112,22 @@ for (const [name, re] of ogRequired) {
 }
 check(existsSync("og-image.png"), "og-image.png tidak ada di root");
 check(existsSync("favicon.svg"), "favicon.svg tidak ada di root");
+
+// ── README proper (gate merge sejak koreksi 19 Nov 2026) ────────────────
+// readme proper = penjelasan + cara jalan + screenshot asli + video demo.
+// og-image BUKAN screenshot — screenshot harus dari tur Playwright (demo/).
+const readme = readFileSync("README.md", "utf8");
+for (const shot of ["demo/slide-1.png", "demo/slide-4-envelope.png", "demo/slide-5.png"]) {
+  check(existsSync(shot), `screenshot demo hilang: ${shot}`);
+  check(readme.includes(`](${shot})`), `README harus menampilkan screenshot ${shot} secara inline`);
+}
+check(existsSync("demo/demo.mp4"), "video demo hilang: demo/demo.mp4");
+check(readme.includes("demo/demo.mp4"), "README harus link ke video demo demo.mp4");
+check(readme.includes("demo/cover.png"), "README harus memakai demo/cover.png sebagai thumbnail video");
+check(existsSync("demo/cover.png") && existsSync("demo/slide-2.png") && existsSync("demo/slide-3.png"),
+  "demo/ harus berisi 6 screenshot tur (cover + slide 1-5)");
+check(statSync("demo/demo.mp4").size > 100_000,
+  "demo.mp4 terlalu kecil (<100KB) — bukan video demo beneran");
 
 // ── Kejujuran isi ─────────────────────────────────────────────────────────
 check(/5 lembar/.test(html) || /Halaman <span id="current-slide-num">1<\/span> dari 5/.test(html),

@@ -166,7 +166,7 @@ jobs:
 
       - name: File deploy ada & tidak kosong
         run: |
-          for f in index.html favicon.svg og-image.png foto/foto1.jpg foto/foto2.jpg foto/foto3.jpg foto/foto4.jpg foto/foto5.jpg audio/lagu.mp3; do
+          for f in index.html favicon.svg og-image.png foto/foto1.jpg foto/foto2.jpg foto/foto3.jpg foto/foto4.jpg foto/foto5.jpg audio/lagu.mp3 demo/demo.mp4 demo/cover.png demo/slide-1.png demo/slide-2.png demo/slide-3.png demo/slide-4-envelope.png demo/slide-5.png; do
             test -s "$f" || { echo "FAIL: $f hilang/kosong"; exit 1; }
             echo "ok: $f ($(stat -c%s "$f") byte)"
           done
