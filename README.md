@@ -4,7 +4,7 @@
 amplop segel lilin, efek mesin ketik, dan lagu latar.**
 
 Live: **https://vintage-memories-scrapbook.pages.dev/** · Repo:
-[dezzorigin/vintage-memories-scrapbook](https://github.com/dezzorigin/vintage-memories-scrapbook)
+[dezzorigin/Vintage-Memories-Scrapbook](https://github.com/dezzorigin/Vintage-Memories-Scrapbook)
 
 > Foto dan lagu contoh di repo ini adalah isi asli repo (bukan stok). Kalau
 > mau dipakai sebagai kado sungguhan, ganti dulu dengan foto dan lagu kamu —
@@ -12,8 +12,8 @@ Live: **https://vintage-memories-scrapbook.pages.dev/** · Repo:
 
 ## Apa isinya
 
-Scrapbook-nya sendiri ada di **`scrapbook.html`** — satu halaman interaktif
-yang dibuka lembar demi lembar:
+Root situs (`index.html`) **adalah scrapbook-nya sendiri** — satu halaman
+interaktif yang dibuka lembar demi lembar:
 
 | Lembar | Isi |
 |---|---|
@@ -28,32 +28,31 @@ Setiap pindah lembar, gerbang bunga menutup lalu membuka. Lagu latar
 vinyl di pojok kanan untuk jeda. Teks di tiap lembar mengetik huruf demi huruf
 seperti mesin ketik.
 
-Landing di **`index.html`** adalah etalase: hero 2 kolom, galeri "Isi album"
-(5 foto asli repo), indeks fitur, dan cara pakai — semuanya mengantar ke
-`scrapbook.html`.
+> Sejarah: PR #1 (pola lama) sempat membangun landing SaaS di root dan
+> memindahkan produk ke `scrapbook.html`. PR #2 (audit-fix, 19 Nov 2026)
+> membongkar landing itu: root kembali jadi produknya, `scrapbook.html` /
+> `styles.css` / `app.js` dihapus. Tidak ada lagi halaman etalase — yang
+> dibuka di `/` adalah kadonya langsung.
 
 ## Struktur repo
 
 ```
 .
-├── index.html            # landing (etalase + pintu masuk ke scrapbook)
-├── styles.css            # gaya landing (Fraunces + Courier Prime)
-├── app.js                # menu mobile landing
-├── scrapbook.html        # produk: scrapbook interaktif 5 lembar
+├── index.html            # produk: scrapbook interaktif 5 lembar (root = produk)
 ├── favicon.svg           # segel lilin
 ├── og-image.png          # kartu preview 1200×630 (foto asli foto1.jpg)
 ├── foto/                 # 5 foto album (foto1.jpg–foto5.jpg)
 ├── audio/                # 1 lagu latar (lagu.mp3, 6,4 MB)
 ├── docs/                 # PRD, arsitektur, desain, testing, deploy + diagram
-├── scripts/              # advisory-sweep, check-static (gate P0 + OG), verify-live
-├── e2e/                  # tes Playwright (landing + scrapbook, desktop + Pixel 7)
+├── scripts/              # advisory-sweep, check-static (gate produk + OG), verify-live
+├── e2e/                  # tes Playwright (produk di root, desktop + Pixel 7)
 └── .github/workflows/    # CI
 ```
 
 Angka nyata repo: 7 file di commit awal (1 HTML + 5 foto + 1 lagu), media
 ±7 MB — semuanya tetap di repo atas keputusan koordinator (ukuran masih
 wajar untuk git; tidak ada file media yang tidak terpakai — kelima foto
-dipakai di scrapbook + galeri landing, lagu dipakai di scrapbook).
+dipakai di scrapbook, lagu dipakai di scrapbook).
 
 ## Cara jalan
 
@@ -63,16 +62,15 @@ sebagai situs statis:
 ```bash
 # dari root repo
 python3 -m http.server 8520 --bind 127.0.0.1
-# lalu buka http://127.0.0.1:8520/  (landing)
-# dan http://127.0.0.1:8520/scrapbook.html  (scrapbook-nya)
+# lalu buka http://127.0.0.1:8520/  (langsung scrapbook-nya)
 ```
 
 ## Cara pakai (jadikan kado)
 
 1. **Ganti isinya** — taruh 5 foto kamu di `foto/foto1.jpg` sampai
-   `foto/foto5.jpg`, lagu favorit di `audio/lagu.mp3`, dan ubah teks ucapan
-   di `scrapbook.html` (cari atribut `data-typewriter`).
-2. **Buka dan cek** — buka `scrapbook.html`, klik "Buka Kado Cinta", balik
+   `foto5.jpg`, lagu favorit di `audio/lagu.mp3`, dan ubah teks ucapan
+   di `index.html` (cari atribut `data-typewriter`).
+2. **Buka dan cek** — buka `/`, klik "Buka Kado Cinta", balik
    kelima lembarnya, buka amplopnya, pastikan lagunya berbunyi.
 3. **Kirim linknya** — deploy ke Cloudflare Pages (lihat
    [`docs/DEPLOY.md`](docs/DEPLOY.md)) dan kirim linknya ke orang yang
@@ -80,12 +78,11 @@ python3 -m http.server 8520 --bind 127.0.0.1
 
 ## Desain
 
-Arah desain dikunci di [`docs/DESIGN.md`](docs/DESIGN.md): palet poster pos
-(Merah Pos `#C1272D`, Kuning Perangko `#F2A900`, Biru Pos `#1D4ED8` di atas
-Kertas Arsip `#FDFCF6`), Fraunces + Courier Prime, radius 2px, detail khas
-perangko bergigi + segel lilin. Referensi pemenang: **OldView — Vintage
-Photography & Living History Platform** (Dribbble, Majidur Rahman) — arsip
-foto vintage dengan warna berani, bukan beige pudar.
+Arah desain dikunci di [`docs/DESIGN.md`](docs/DESIGN.md): produk asli repo
+— kertas arsip `#f4ebd8`, marun `#5c0d12`, emas `#bca15a`, Great Vibes +
+Courier Prime + Playfair Display, detail khas perangko bergigi + segel lilin
++ gerbang bunga. Palet poster pos landing PR #1 (Merah Pos `#C1272D` dst)
+pensiun bersama landingnya.
 
 ## Dokumen
 
@@ -100,8 +97,8 @@ foto vintage dengan warna berani, bukan beige pudar.
 
 ```bash
 npm install            # dev-only: @playwright/test + html-validate
-npm run validate       # gate P0 anti-slop + tag OG/Twitter
-npm run e2e            # Playwright: landing + scrapbook (desktop + Pixel 7)
+npm run validate       # gate produk + tag OG/Twitter
+npm run e2e            # Playwright: produk di root (desktop + Pixel 7)
 python3 scripts/advisory-sweep.py   # OSV atas dependensi produksi
 python3 scripts/verify-live.py https://vintage-memories-scrapbook.pages.dev
 ```
@@ -115,6 +112,15 @@ plus gitleaks (riwayat penuh) dan smoke check file deploy.
   lokal tidak bisa start); diambil dari browser live saat VM pulih.
 - **Keputusan hosting media** — media ±7 MB tetap di repo untuk repo ini;
   kalau albumnya membesar, pertimbangkan pindah foto ke R2/Cloudflare Images.
+- **Layar pendek** — di viewport pendek (mis. tinggi <700px) konten lembar 2
+  (notebook + polaroid bertumpuk) bisa meluber melewati area main dan
+  tertutup sebagian oleh header/footer (body `overflow-hidden`, tanpa scroll).
+  Perilaku bawaan produk asli; perbaikan butuh ubah layout lembar — ditunda,
+  bukan gate.
+- **Segel vs flap amplop** — sesudah satu siklus buka + tinggalkan lembar 4,
+  `resetEnvelope()` mengembalikan flap ke z-index inline 35 (di atas segel
+  z-30); tumpang tindihnya hanya ujung segitiga flap ±2px, nyaris tak
+  terlihat. Perilaku bawaan JS produk; dicatat, bukan gate.
 
 ## Lisensi
 

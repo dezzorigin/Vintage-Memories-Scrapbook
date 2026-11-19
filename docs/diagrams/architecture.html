@@ -24,11 +24,11 @@
 </head>
 <body>
 <h1>Arsitektur vintage-memories-scrapbook</h1>
-<p>Situs statis penuh, tanpa build. Dua halaman HTML saling bertaut; media
-lokal di repo (±7 MB); tidak ada dependensi produksi npm. Deploy = unggah
-direktori ke Cloudflare Pages.</p>
+<p>Situs statis penuh, tanpa build. Satu halaman HTML (root = produk);
+media lokal di repo (±7 MB); tidak ada dependensi produksi npm. Deploy =
+unggah direktori ke Cloudflare Pages.</p>
 
-<svg viewBox="0 0 960 600" role="img" aria-label="Diagram arsitektur: pengunjung ke Cloudflare Pages, lalu landing dan scrapbook, media foto dan lagu, serta CI">
+<svg viewBox="0 0 960 600" role="img" aria-label="Diagram arsitektur: pengunjung ke Cloudflare Pages, lalu produk di root, media foto dan lagu, serta CI">
   <defs>
     <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M 0 0 L 10 5 L 0 10 z" fill="#C1272D"></path>
@@ -48,17 +48,11 @@ direktori ke Cloudflare Pages.</p>
   <text class="wht" x="350" y="66">Cloudflare Pages</text>
   <text class="wsub" x="350" y="86">vintage-memories-scrapbook.pages.dev</text>
 
-  <!-- Landing -->
+  <!-- Produk di root -->
   <rect class="box" x="330" y="180" width="300" height="88" rx="2"></rect>
-  <text class="lbl" x="350" y="206">index.html — landing</text>
-  <text class="sub" x="350" y="226">hero 2 kolom · galeri 5 foto</text>
-  <text class="sub" x="350" y="246">indeks fitur · cara pakai</text>
-
-  <!-- Scrapbook -->
-  <rect class="box" x="330" y="320" width="300" height="88" rx="2"></rect>
-  <text class="lbl" x="350" y="346">scrapbook.html — produk</text>
-  <text class="sub" x="350" y="366">5 lembar · mesin ketik · amplop</text>
-  <text class="sub" x="350" y="386">musik · partikel hati</text>
+  <text class="lbl" x="350" y="206">index.html — produk (root)</text>
+  <text class="sub" x="350" y="226">5 lembar · mesin ketik · amplop</text>
+  <text class="sub" x="350" y="246">musik · partikel hati · gerbang bunga</text>
 
   <!-- Media -->
   <rect class="box-yellow" x="700" y="180" width="230" height="88" rx="2"></rect>
@@ -80,13 +74,11 @@ direktori ke Cloudflare Pages.</p>
   <!-- Panah -->
   <path class="arrow" d="M 200 72 L 330 72"></path>
   <path class="arrow" d="M 480 104 L 480 180"></path>
-  <path class="arrow" d="M 480 268 L 480 320"></path>
   <path class="arrow-blue" d="M 630 224 L 700 224"></path>
-  <path class="arrow-blue" d="M 630 364 L 700 364"></path>
-  <path class="arrow" d="M 480 408 L 480 480"></path>
+  <path class="arrow-blue" d="M 600 268 L 700 320"></path>
+  <path class="arrow" d="M 480 268 L 480 480"></path>
   <text class="note" x="490" y="450">deploy: cf_pages.py direct upload</text>
   <text class="note" x="490" y="150">GET /</text>
-  <text class="note" x="490" y="300">GET /scrapbook.html</text>
 </svg>
 
 <p>Alur scrapbook: start-overlay → klik "Buka Kado Cinta" (audio.play,

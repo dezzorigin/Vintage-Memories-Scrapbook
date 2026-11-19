@@ -1,8 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// Landing + scrapbook vintage-memories-scrapbook adalah situs statis:
-// yang diuji adalah konten + interaksi halamannya (galeri, menu mobile,
-// overlay pembuka scrapbook, navigasi 5 lembar).
+// Root vintage-memories-scrapbook ADALAH produknya: scrapbook interaktif
+// 5 lembar di "/" (overlay pembuka, navigasi + gerbang bunga, amplop
+// segel lilin, tombol hati). Situs statis: yang diuji adalah konten +
+// interaksi halamannya.
 export default defineConfig({
   testDir: "./e2e",
   timeout: 30_000,

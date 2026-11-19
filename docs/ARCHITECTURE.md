@@ -2,16 +2,19 @@
 
 ## Gambaran
 
-Situs **statis penuh, tanpa build**. Dua halaman HTML yang saling bertaut,
+Situs **statis penuh, tanpa build**. Satu halaman HTML (produk di root),
 media lokal di repo, dan tidak ada satu pun dependensi runtime yang diinstal
 via npm. Deploy = unggah direktori ke Cloudflare Pages (direct upload API).
 
 ```
-pengunjung ──▶ Cloudflare Pages ──▶ index.html (landing)
-                                  ├─ styles.css + app.js (vanilla)
+pengunjung ──▶ Cloudflare Pages ──▶ index.html (produk: scrapbook 5 lembar)
                                   ├─ foto/*.jpg + og-image.png
-                                  └─ scrapbook.html ──▶ audio/lagu.mp3
+                                  └─ audio/lagu.mp3
 ```
+
+Sejak PR #2 (audit-fix, 19 Nov 2026) root ADALAH produknya — dulu ada dua
+halaman (landing `index.html` + produk `scrapbook.html`); landing dibongkar
+dan duplikat produk dihapus, jadi tinggal satu halaman.
 
 Diagram visual: [`diagrams/architecture.html`](diagrams/architecture.html)
 (HTML + SVG, bukan Mermaid).
@@ -20,13 +23,10 @@ Diagram visual: [`diagrams/architecture.html`](diagrams/architecture.html)
 
 | Komponen | File | Peran |
 |---|---|---|
-| Landing | `index.html` | Etalase: hero, galeri 5 foto, indeks fitur, cara pakai, footer |
-| Gaya landing | `styles.css` | Satu stylesheet vanilla; variabel palet di `:root` |
-| Logika landing | `app.js` | Hanya toggle menu mobile (28 baris) |
-| Scrapbook | `scrapbook.html` | Produk: 5 slide + mesin ketik + amplop + musik + partikel |
+| Scrapbook | `index.html` | Produk: 5 slide + mesin ketik + amplop + musik + partikel (root = produk) |
 | Media | `foto/foto1-5.jpg`, `audio/lagu.mp3` | Isi album; ±7 MB, tetap di repo |
 | Preview | `og-image.png`, `favicon.svg` | Kartu OG 1200×630 (PIL, dari foto1.jpg) + segel lilin SVG |
-| Tes | `e2e/*.spec.ts`, `scripts/check-static.mjs` | Playwright + gate P0/OG |
+| Tes | `e2e/*.spec.ts`, `scripts/check-static.mjs` | Playwright + gate produk/OG |
 | CI | `.github/workflows/ci.yml` | static-checks, advisory-sweep, gitleaks, e2e, smoke |
 
 ## Alur scrapbook (state machine sederhana)
@@ -53,8 +53,8 @@ start-overlay ──klik──▶ slide 1 (ketik) ──Lanjut──▶ slide 2 
 
 | Dependensi | Jenis | Dipakai di | Catatan |
 |---|---|---|---|
-| Tailwind Play CDN | runtime (CDN) | `scrapbook.html` | Sudah ada sejak commit awal; dipertahankan supaya produk tidak berubah perilaku |
-| Google Fonts (Fraunces, Courier Prime, Great Vibes, Playfair Display) | runtime (CDN) | kedua halaman | Landing: Fraunces + Courier Prime; scrapbook: Great Vibes + Courier Prime + Playfair Display |
+| Tailwind Play CDN | runtime (CDN) | `index.html` | Sudah ada sejak commit awal; dipertahankan supaya produk tidak berubah perilaku |
+| Google Fonts (Great Vibes, Courier Prime, Playfair Display) | runtime (CDN) | produk | Font asli produk: script + mesin ketik + serif display |
 | `@playwright/test` ^1.55.0 | dev | e2e | CI saja |
 | `html-validate` ^11.21.1 | dev | static-checks | CI saja |
 
@@ -66,14 +66,16 @@ seandainya daftar terisi kelak. JANGAN ganti gate ini ke `npm audit`
 
 ## Keputusan
 
-1. **Landing terpisah dari produk.** `index.html` awal ADALAH scrapbook-nya;
-   menulis ulang jadi landing akan menghancurkan produk. Solusi: scrapbook
-   pindah ke `scrapbook.html` (isi dipertahankan, hanya ditambah tag OG +
-   link "← Landing"), landing baru di `index.html`.
+1. **Landing terpisah dari produk (PR #1) — DIBATALKAN di PR #2.**
+   `index.html` awal ADALAH scrapbook-nya; PR #1 menulis ulang jadi landing
+   dan memindahkan produk ke `scrapbook.html`. PR #2 membalikkan keputusan
+   itu (arah baru koordinator 19 Nov 2026: root harus JADI produknya):
+   produk kembali ke `index.html`, landing dibongkar, `scrapbook.html` /
+   `styles.css` / `app.js` dihapus.
 2. **Media tetap di repo.** ±7 MB masih wajar untuk git; tidak ada file media
-   yang tidak terpakai (5 foto dipakai di scrapbook + galeri; lagu dipakai di
-   scrapbook). Kalau album membesar, follow-up: pindah ke R2/Images.
-3. **Tanpa build step.** Menambah bundler untuk situs 2 halaman hanya
+   yang tidak terpakai (5 foto + lagu dipakai di scrapbook). Kalau album
+   membesar, follow-up: pindah ke R2/Images.
+3. **Tanpa build step.** Menambah bundler untuk situs 1 halaman hanya
    menambah titik gagal; CI memvalidasi file apa adanya.
 4. **Tanpa lockfile di root.** Repo tidak punya `package-lock.json`; CI memakai
    `npm install` (bukan `npm ci`) dan tanpa `cache: npm` di setup-node.

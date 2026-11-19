@@ -13,13 +13,17 @@ README, LICENSE, .gitignore, CI, atau deploy.
 
 - **Pemberi kado** — mengganti foto, lagu, dan teks ucapan, lalu mengirim
   link. Teknis: cukup ganti file di `foto/` dan `audio/`, edit atribut
-  `data-typewriter` di `scrapbook.html`.
+  `data-typewriter` di `index.html`.
 - **Penerima kado** — membuka link di browser (desktop/mobile), tanpa install
   dan tanpa akun.
 
 ## Kebutuhan fungsional
 
-### Scrapbook (`scrapbook.html`) — produk inti, dipertahankan dari repo awal
+### Scrapbook (`index.html`) — produk inti, root = produk (PR #2)
+
+Sejak PR #2 (audit-fix, 19 Nov 2026) root situs ADALAH scrapbook-nya:
+`index.html` berisi produk asli repo (dulu `scrapbook.html`, dipindah ke
+root + perbaikan audit). Tidak ada landing, tidak ada halaman perantara.
 
 1. **Layar pembuka** — kartu polaroid "Teruntuk Sayangku" + tombol
    "Buka Kado Cinta". Klik tombol = pemutar musik diizinkan browser
@@ -43,30 +47,22 @@ README, LICENSE, .gitignore, CI, atau deploy.
 8. **Ornamen melayang** — simbol (kue, balon, hati, bunga, dsb) naik dari
    bawah layar secara berkala; dekoratif, tidak menghalangi konten.
 
-### Landing (`index.html`) — etalase baru
+### Landing (`index.html` PR #1) — DIBONGKAR di PR #2
 
-9. **Navbar sticky** — merek + segel lilin, link Isi album / Fitur /
-   Cara pakai, logo GitHub (kanan atas, link ke repo), CTA "Buka scrapbook",
-   menu mobile (toggle, target sentuh 44px).
-10. **Hero 2 kolom** — teks kiri (kicker, headline, lede, 2 CTA, fakta nyata
-    repo: 5 lembar / 5 foto / 1 lagu / ±7 MB media), kolase 3 polaroid miring
-    kanan + cap pos.
-11. **Galeri "Isi album"** — 5 foto asli repo sebagai kartu perangko
-    (bingkai + label lembar + caption), masing-masing link ke `scrapbook.html`.
-12. **Fitur sebagai indeks arsip** — 6 baris bernomor, bukan grid kartu
-    simetris.
-13. **Cara pakai 3 langkah** — ganti isi → buka dan cek → kirim linknya,
-    plus pita CTA merah.
-14. **Footer satu baris** — deskripsi jujur, link GitHub / scrapbook / live,
-    lisensi MIT.
+PR #1 sempat membangun landing SaaS di root (navbar, hero 2 kolom, galeri
+"Isi album", indeks fitur, cara pakai, footer marketing) dengan produk di
+`scrapbook.html`. PR #2 membongkar landing itu seluruhnya — arah baru
+koordinator 19 Nov 2026: root harus JADI produknya, bukan etalase tentang
+produk. Yang dipertahankan dari landing hanya tautan GitHub repo (higiene,
+di footer produk) + judul/deskripsi jujur. `scrapbook.html`, `styles.css`,
+dan `app.js` dihapus; `/scrapbook.html` kini 404.
 
 ### Non-fungsional
 
 - **Statis penuh** — tanpa build, tanpa backend, tanpa dependensi runtime
-  (landing: CSS + JS vanilla; scrapbook: Tailwind CDN + Google Fonts, seperti
-  aslinya).
+  (produk: Tailwind CDN + Google Fonts, seperti aslinya).
 - **OG preview lengkap** — `og:title/description/type/url/image` +
-  `twitter:card summary_large_image` di kedua halaman; `og:image` absolut ke
+  `twitter:card summary_large_image` di root; `og:image` absolut ke
   `og-image.png` 1200×630 (dibuat dari foto asli `foto/foto1.jpg` via PIL).
 - **Aksesibilitas** — label aria pada tombol ikon, focus-visible, skip link,
   `prefers-reduced-motion` dihormati, kontras AA, tanpa scroll horizontal di
@@ -84,8 +80,9 @@ README, LICENSE, .gitignore, CI, atau deploy.
 
 ## Kriteria terima
 
-- Semua 8 poin fungsional scrapbook + 6 poin landing bekerja di play-test
+- Semua 8 poin fungsional scrapbook bekerja di play-test
   (CI Playwright + verifikasi live).
 - CI hijau penuh (static-checks, advisory-sweep, gitleaks, e2e, smoke).
-- Live di Cloudflare Pages: root 200 + marker + tag OG lengkap +
-  og-image.png 200 `image/*` + kelima foto 200.
+- Live di Cloudflare Pages: root 200 + marker produk + tag OG lengkap +
+  og-image.png 200 `image/*` + kelima foto 200 + `audio/lagu.mp3` 200
+  `audio/mpeg` + `/scrapbook.html` 404 + 0 frasa landing SaaS di root.
