@@ -145,7 +145,11 @@ jobs:
             sudo apt-get install -y -qq ffmpeg
             FF=ffmpeg
           fi
-          "$FF" -y -loglevel error -i "$VIDEO" -c:v libx264 -pix_fmt yuv420p -movflags +faststart demo/demo.mp4
+          # CATATAN: ffmpeg bawaan Playwright adalah build minimal — opsi
+          # -movflags TIDAK dikenal ("Unrecognized option 'movflags'",
+          # run 12). Tanpa faststart pun mp4 tetap bisa diputar; moov atom
+          # di akhir file bukan masalah untuk unduhan progresif.
+          "$FF" -y -loglevel error -i "$VIDEO" -c:v libx264 -pix_fmt yuv420p demo/demo.mp4
           test -s demo/demo.mp4 || { echo "FAIL: demo.mp4 kosong"; exit 1; }
           "$FF" -hide_banner -i demo/demo.mp4 2>&1 | head -20 || true
           ls -la demo/
