@@ -7,6 +7,9 @@ export default defineConfig({
   testDir: "./e2e",
   timeout: 30_000,
   retries: 0,
+  // Di CI, reporter github menulis anotasi kegagalan ke check-run — bisa
+  // dibaca via API tanpa mengunduh log (log CI tidak bisa diunduh dari VM).
+  reporter: process.env.CI ? "github" : "list",
   use: { baseURL: "http://127.0.0.1:8520" },
   webServer: {
     command: "python3 -m http.server 8520 --bind 127.0.0.1",
