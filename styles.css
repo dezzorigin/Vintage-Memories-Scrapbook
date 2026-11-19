@@ -459,6 +459,11 @@ section { padding: 56px 0; }
 }
 @media (max-width: 640px) {
   .nav, .github-link span { display: none; }
+  /* Brand dipersingkat ("Scrapbook" disembunyikan) supaya navbar tidak
+     meluber melewati viewport 390px — brand nowrap + seal + ikon + toggle
+     sebelumnya melewati ~65px dan membuat tes overflow mobile gagal. */
+  .brand { font-size: 17px; }
+  .brand em { display: none; }
   .nav-toggle { display: flex; }
   .nav-right .btn-sm { display: none; }
   .hero { padding: 40px 0 48px; }
