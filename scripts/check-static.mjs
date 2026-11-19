@@ -46,7 +46,7 @@ check(/id="prev-btn"/.test(html) && /id="next-btn"/.test(html),
 check(html.includes("Buka Kado Cinta"), "marker 'Buka Kado Cinta' tidak ada di root");
 check(html.includes("MY SWEETHEART"), "marker 'MY SWEETHEART' tidak ada di root");
 check(html.includes("Lembar Awal Kita"), "marker 'Lembar Awal Kita' tidak ada di root");
-check(html.includes("Selamanya & Seterusnya"), "marker 'Selamanya & Seterusnya' tidak ada di root");
+check(html.includes("Selamanya &amp; Seterusnya"), "marker 'Selamanya & Seterusnya' tidak ada di root");
 check(/<title>Selamat Ulang Tahun, Sayang \| Vintage Scrapbook<\/title>/.test(html),
   "title root harus judul produk asli, bukan judul landing");
 

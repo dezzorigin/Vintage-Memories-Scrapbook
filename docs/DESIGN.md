@@ -80,6 +80,16 @@ dengan washi tape.
    melenceng. Dihapus; `/scrapbook.html` kini tidak lagi ada sebagai file —
    live Pages mengembalikan fallback root untuk path itu (identik byte
    dengan root, dicek verify-live; 404 aslinya dicek e2e di server lokal).
+5. **Produk asli tidak lolos `html-validate` bawaan** — karena `index.html`
+   baru divalidasi (dulu hanya landing yang divalidasi), 59 error produk
+   lama ketahuan: spasi akhir baris (±43), `<img/>` self-closing (×5),
+   tombol tanpa `type="button"` (×5), `<div>` di dalam `<button>` vinyl,
+   atribut `autoplay` pada `<audio>` (diblokir browser sebelum gestur —
+   pemutaran tetap lewat tombol "Buka Kado Cinta"), 2 `style` inline, dan
+   `&` mentah di caption penutup. Semua diperbaiki tanpa mengubah perilaku:
+   vinyl jadi `<span>` (kelas Tailwind yang mengatur tampilannya), 2 style
+   pindah ke blok `<style>` (`perspective` amplop, `transform` flap),
+   `&` jadi `&amp;`.
 
 ## Yang pensiun bersama landing PR #1 (riwayat, bukan kontrak)
 
