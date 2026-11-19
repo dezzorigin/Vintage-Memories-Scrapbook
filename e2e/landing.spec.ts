@@ -14,8 +14,9 @@ test("landing tampil: judul, galeri 5 foto, fakta repo, link GitHub", async ({ p
   await expect(page.locator(".hero-facts")).toContainText("lagu latar");
   // logo GitHub kanan atas mengarah ke repo
   await expect(page.locator('.github-link[href="https://github.com/dezzorigin/vintage-memories-scrapbook"]').first()).toBeVisible();
-  // CTA mengarah ke scrapbook
-  await expect(page.locator('a.btn[href="scrapbook.html"]').first()).toBeVisible();
+  // CTA hero mengarah ke scrapbook (bukan CTA navbar — yang itu memang
+  // disembunyikan di mobile lewat .nav-right .btn-sm)
+  await expect(page.locator('.hero-actions a.btn[href="scrapbook.html"]').first()).toBeVisible();
   // indeks fitur + cara pakai
   await expect(page.locator(".index-list li")).toHaveCount(6);
   await expect(page.locator(".steps li")).toHaveCount(3);
