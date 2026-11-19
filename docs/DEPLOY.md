@@ -28,10 +28,12 @@ tidak ada `_worker.js`.
 python3 scripts/verify-live.py https://vintage-memories-scrapbook.pages.dev
 ```
 
-Cek: root 200 + marker "Kado ulang tahun yang dibuka lembar demi lembar." +
+Cek: root 200 + marker produk ("Buka Kado Cinta", "MY SWEETHEART") +
 9 tag `og:`/`twitter:` + `og-image.png` 200 dengan `content-type: image/*`
 (bukan `text/html` — fallback Pages menipu) + `foto/foto1.jpg`–`foto5.jpg`
-200 + `scrapbook.html` 200 + `audio/lagu.mp3` 200.
+200 + `audio/lagu.mp3` 200 `audio/mpeg` + `/scrapbook.html` identik byte
+dengan root (fallback Pages — entry lama sudah dihapus, 404 aslinya dicek
+e2e) + 0 frasa landing SaaS di root.
 
 Pakai User-Agent browser (UA default Python kena 403 Cloudflare — pelajaran
 repo #40). Jangan pakai `curl -o` untuk verifikasi (menulis file 0 byte walau
@@ -51,6 +53,8 @@ python3 ~/workspace/github-actions/gh_set_homepage.py \
 
 - Deploy pertama dilakukan dari branch `feat/proper` SEBELUM merge, untuk
   verifikasi live. Setelah merge, deploy ulang dari `main` supaya yang live
-  = isi main.
+  = isi main. Pola yang sama dipakai PR #2 (`feat/audit-fix`): deploy dari
+  branch dulu untuk verifikasi live sebelum merge, lalu deploy ulang dari
+  `main` sesudah merge.
 - Preview screenshot + video demo adalah follow-up (browser live), bukan
   gate merge.
