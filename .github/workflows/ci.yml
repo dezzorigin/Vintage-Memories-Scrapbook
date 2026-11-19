@@ -1,0 +1,118 @@
+name: CI
+
+# CI untuk vintage-memories-scrapbook (repo #52 — template kado ulang tahun
+# digital: scrapbook interaktif 5 lembar + landing etalase, situs statis).
+# Job:
+#   static-checks  — html-validate Node 24 + gate P0 + tag OG.
+#   advisory-sweep — OSV atas dependensi produksi (saat ini 0 paket npm —
+#                    situs statis; HIGH/CRITICAL = gagal).
+#   gitleaks       — secret scan riwayat penuh (fetch-depth 0) + .gitleaks.toml.
+#   playwright-e2e — landing + scrapbook di server lokal (desktop + Pixel 7).
+#   smoke          — file yang di-deploy ada & tidak kosong.
+# Node 24 (html-validate 11 crash di Node 20, pola #29).
+# JANGAN `npx playwright install` di VM dev — hanya di CI.
+# JANGAN pakai `| tee` tanpa pipefail di step CI (pelajaran #44: tee
+# menutupi exit code gagal jadi tampak hijau).
+#
+# CATATAN LOCKFILE (19 Nov 2026): repo ini BELUM punya package-lock.json
+# di root. CI memakai `npm install` (bukan `npm ci`) dan TANPA `cache: npm`
+# di setup-node (keduanya butuh lockfile). Lockfile hasil instalasi CI
+# diunggah sebagai artifact (job static-checks) supaya bisa di-commit
+# belakangan.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── Pemeriksaan statis: HTML + gate P0 + tag OG ─────────────────────────
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Validasi HTML
+        run: npx html-validate index.html
+
+      - name: Gate P0 + tag OG/Twitter
+        run: npm run validate
+
+      - name: Unggah package-lock hasil instalasi
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-lock
+          path: package-lock.json
+          if-no-files-found: warn
+
+  # ── Advisory sweep (OSV, tanpa auth) ────────────────────────────────────
+  advisory-sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Sweep dependensi produksi di OSV
+        run: python3 scripts/advisory-sweep.py
+
+  # ── Gitleaks: secret scan riwayat penuh ─────────────────────────────────
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install gitleaks 8.28.0
+        run: |
+          curl -sL -o /tmp/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.28.0/gitleaks_8.28.0_linux_x64.tar.gz
+          tar -xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+
+      - name: Gitleaks (riwayat penuh, config repo)
+        run: /tmp/gitleaks git --no-banner --config .gitleaks.toml
+
+  # ── E2E Playwright (situs statis, HANYA di CI) ──────────────────────────
+  playwright-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E landing + scrapbook (desktop + Pixel 7)
+        run: npm run e2e
+
+  # ── Smoke: file deploy ada & tidak kosong ───────────────────────────────
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: File deploy ada & tidak kosong
+        run: |
+          for f in index.html styles.css app.js scrapbook.html favicon.svg og-image.png foto/foto1.jpg foto/foto2.jpg foto/foto3.jpg foto/foto4.jpg foto/foto5.jpg audio/lagu.mp3; do
+            test -s "$f" || { echo "FAIL: $f hilang/kosong"; exit 1; }
+            echo "ok: $f ($(stat -c%s "$f") byte)"
+          done
